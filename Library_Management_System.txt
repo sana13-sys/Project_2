@@ -1,0 +1,322 @@
+    #include <stdio.h>
+    #include <string.h>
+
+    #define MAX 50
+
+    int id[MAX], availability[MAX];
+    char name[MAX][50], author[MAX][50], category[MAX][30];
+    float price[MAX];
+    int count = 0;
+
+    void addBook();
+    void displayBooks();
+    void searchById();
+    void searchByName();
+    void issueBook();
+    void returnBook();
+    void updateBook();
+    void displayAvailable();
+
+    int findBook(int bookId)
+    {
+        int i;
+
+        for(i = 0; i < count; i++)
+        {
+            if(id[i] == bookId)
+                return i;
+        }
+
+        return -1;
+    }
+
+    void addBook()
+    {
+        int bookId;
+
+        if(count >= MAX)
+        {
+            printf("\\nLibrary is full!");
+            return;
+        }
+
+        printf("\\nEnter Book ID: ");
+        scanf("%d", &bookId);
+
+        if(findBook(bookId) != -1)
+        {
+            printf("\\nDuplicate Book ID!");
+            return;
+        }
+
+        id[count] = bookId;
+
+        printf("Enter Book Name: ");
+        scanf(" %49[^\\n]", name[count]);
+
+        printf("Enter Author Name: ");
+        scanf(" %49[^\\n]", author[count]);
+
+        printf("Enter Category: ");
+        scanf(" %29[^\\n]", category[count]);
+
+        printf("Enter Price: ");
+        scanf("%f", &price[count]);
+
+        availability[count] = 1;
+        count++;
+
+        printf("\\nBook added successfully!");
+    }
+
+    void displayBooks()
+    {
+        int i;
+
+        if(count == 0)
+        {
+            printf("\\nNo books available!");
+            return;
+        }
+
+        printf("\\n========== ALL BOOKS ==========\\n");
+
+        for(i = 0; i < count; i++)
+        {
+            printf("\\nBook ID: %d", id[i]);
+            printf("\\nBook Name: %s", name[i]);
+            printf("\\nAuthor: %s", author[i]);
+            printf("\\nCategory: %s", category[i]);
+            printf("\\nPrice: %.2f", price[i]);
+
+            if(availability[i] == 1)
+                printf("\\nStatus: Available\\n");
+            else
+                printf("\\nStatus: Issued\\n");
+        }
+    }
+
+    void searchById()
+    {
+        int bookId, pos;
+
+        printf("\\nEnter Book ID to search: ");
+        scanf("%d", &bookId);
+
+        pos = findBook(bookId);
+
+        if(pos == -1)
+        {
+            printf("\\nBook not found!");
+            return;
+        }
+
+        printf("\\nBook Name: %s", name[pos]);
+        printf("\\nAuthor: %s", author[pos]);
+        printf("\\nCategory: %s", category[pos]);
+        printf("\\nPrice: %.2f", price[pos]);
+        printf("\\nAvailability: %s",
+               availability[pos] ? "Available" : "Issued");
+    }
+
+    void searchByName()
+    {
+        char bookName[50];
+        int i, found = 0;
+
+        printf("\\nEnter Book Name: ");
+        scanf(" %49[^\\n]", bookName);
+
+        for(i = 0; i < count; i++)
+        {
+            if(strcmp(name[i], bookName) == 0)
+            {
+                printf("\\nBook ID: %d", id[i]);
+                printf("\\nBook Name: %s", name[i]);
+                printf("\\nAuthor: %s", author[i]);
+                printf("\\nCategory: %s", category[i]);
+                printf("\\nPrice: %.2f\\n", price[i]);
+                found = 1;
+            }
+        }
+
+        if(!found)
+            printf("\\nBook not found!");
+    }
+
+    void issueBook()
+    {
+        static int issueCount = 0;
+        int bookId, pos;
+
+        printf("\\nEnter Book ID to issue: ");
+        scanf("%d", &bookId);
+
+        pos = findBook(bookId);
+
+        if(pos == -1)
+        {
+            printf("\\nBook not found!");
+        }
+        else if(availability[pos] == 0)
+        {
+            printf("\\nBook is already issued!");
+        }
+        else
+        {
+            availability[pos] = 0;
+            issueCount++;
+
+            printf("\\nBook issued successfully!");
+            printf("\\nTotal issues: %d", issueCount);
+        }
+    }
+
+    void returnBook()
+    {
+        int bookId, pos;
+
+        printf("\\nEnter Book ID to return: ");
+        scanf("%d", &bookId);
+
+        pos = findBook(bookId);
+
+        if(pos == -1)
+        {
+            printf("\\nBook not found!");
+        }
+        else if(availability[pos] == 1)
+        {
+            printf("\\nBook is already available!");
+        }
+        else
+        {
+            availability[pos] = 1;
+            printf("\\nBook returned successfully!");
+        }
+    }
+
+    void updateBook()
+    {
+        int bookId, pos;
+
+        printf("\\nEnter Book ID to update: ");
+        scanf("%d", &bookId);
+
+        pos = findBook(bookId);
+
+        if(pos == -1)
+        {
+            printf("\\nBook not found!");
+            return;
+        }
+
+        printf("\\nEnter New Book Name: ");
+        scanf(" %49[^\\n]", name[pos]);
+
+        printf("Enter New Author Name: ");
+        scanf(" %49[^\\n]", author[pos]);
+
+        printf("Enter New Category: ");
+        scanf(" %29[^\\n]", category[pos]);
+
+        printf("Enter New Price: ");
+        scanf("%f", &price[pos]);
+
+        printf("\\nBook details updated successfully!");
+    }
+
+    void displayAvailable()
+    {
+        int i, found = 0;
+
+        printf("\\n========== AVAILABLE BOOKS ==========\\n");
+
+        for(i = 0; i < count; i++)
+        {
+            if(availability[i] == 1)
+            {
+                printf("\\nBook ID: %d", id[i]);
+                printf("\\nBook Name: %s", name[i]);
+                printf("\\nAuthor: %s", author[i]);
+                printf("\\nPrice: %.2f\\n", price[i]);
+
+                found = 1;
+            }
+        }
+
+        if(!found)
+            printf("\\nNo available books!");
+    }
+
+    int main()
+    {
+        int choice;
+
+        do
+        {
+            printf("\\n\\n========== LIBRARY MANAGEMENT SYSTEM ==========");
+            printf("\\n1. Add New Book");
+            printf("\\n2. Display All Books");
+            printf("\\n3. Search Book by ID");
+            printf("\\n4. Search Book by Name");
+            printf("\\n5. Issue Book");
+            printf("\\n6. Return Book");
+            printf("\\n7. Update Book Details");
+            printf("\\n8. Count Total Books");
+            printf("\\n9. Display Available Books");
+            printf("\\n10. Exit");
+
+            printf("\\n\\nEnter your choice: ");
+            scanf("%d", &choice);
+
+            switch(choice)
+            {
+                case 1:
+                    addBook();
+                    break;
+
+                case 2:
+                    displayBooks();
+                    break;
+
+                case 3:
+                    searchById();
+                    break;
+
+                case 4:
+                    searchByName();
+                    break;
+
+                case 5:
+                    issueBook();
+                    break;
+
+                case 6:
+                    returnBook();
+                    break;
+
+                case 7:
+                    updateBook();
+                    break;
+
+                case 8:
+                    printf("\\nTotal Books: %d", count);
+                    break;
+
+                case 9:
+                    displayAvailable();
+                    break;
+
+                case 10:
+                    printf("\\nThank you for using Library Management System!");
+                    break;
+
+                default:
+                    printf("\\nInvalid choice! Please try again.");
+            }
+
+        } while(choice != 10);
+
+        return 0;
+    }
